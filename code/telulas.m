@@ -40,7 +40,7 @@ for idx = 1:nframes
             theta(idx) = -(theta(idx));
         end
 
-        r(idx) = - (1.5 * d + m) / cos(theta(idx));
+        r(idx) = (m - 1.5 * d) / cos(theta(idx));
 
         if r(idx) == inf || r(idx) == -inf
             r(idx) = r(idx-1);
@@ -51,7 +51,8 @@ for idx = 1:nframes
         % plot(idx,r(idx),'rx'); hold on; ylim([-10 10]);
         % plot(idx,rad2deg(phi1),'rx'); hold on;
         % plot(idx,rad2deg(phi2),'bx'); hold on;
-        plot(idx,m,'rx'); hold on;
+        % plot(idx,m,'rx'); hold on;
+        plot(idx,(1.5*d - m), 'rx'); hold on;
     elseif mean(delta21 + delta32 + delta43) < 0
         phi3 = estTheta(delta43,c,d);
         phi4 = estTheta(delta32,c,d);
@@ -62,7 +63,7 @@ for idx = 1:nframes
             theta(idx) = -(theta(idx));
         end
 
-        r(idx) = (1.5 * d + m) / cos(theta(idx));
+        r(idx) = (m - 1.5 * d) / cos(theta(idx));
 
         if r(idx) == inf || r(idx) == -inf
             r(idx) = r(idx-1);
@@ -73,7 +74,8 @@ for idx = 1:nframes
         % plot(idx,r(idx),'bx'); hold on; ylim([-10 10]);
         % plot(idx,rad2deg(phi3),'gx'); hold on;
         % plot(idx,rad2deg(phi4),'kx'); hold on;
-        plot(idx,m,'bx'); hold on;
+        % plot(idx,m,'bx'); hold on;
+        plot(idx,(1.5*d - m), 'bx'); hold on;
     end
     
     % figure(1);
