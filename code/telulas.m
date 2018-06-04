@@ -23,7 +23,7 @@ dy = zeros(1,nframes);
 phi = zeros(1,nframes);
 
 start = 1;
-for idx = 1:5
+for idx = 1:nframes
     fprintf('frame # %i : %i\n', idx, nframes)
     % [delta,~] = tde(x(start:start+wl-1,1), x(start:start+wl-1,2), fs);
     [delta21,~] = tde(x(start:start+wl-1,2), x(start:start+wl-1,1), fs);
@@ -33,7 +33,7 @@ for idx = 1:5
     if mean(delta21 + delta32 + delta43) >= 0
         phi1 = estTheta(delta21,c,d);
         phi2 = estTheta(delta32,c,d);
-        m = d * (2*tan(phi2) - tan(phi1)) / (tan(phi1) - tan(phi2));
+        m = d * (2*tan(phi1) - tan(phi2)) / (tan(phi2) - tan(phi1));
         theta(idx) = - atan(tan(deg2rad(180) - phi2) / 0.5);
 
         if rad2deg(theta(idx)) < -85 && rad2deg(theta(idx)) > -95
@@ -49,8 +49,9 @@ for idx = 1:5
         dx(idx) = r(idx) * cos(theta(idx));
         dy(idx) = r(idx) * sin(theta(idx));
         % plot(idx,r(idx),'rx'); hold on; ylim([-10 10]);
-        plot(idx,rad2deg(phi1),'rx'); hold on;
-        plot(idx,rad2deg(phi2),'bx'); hold on;
+        % plot(idx,rad2deg(phi1),'rx'); hold on;
+        % plot(idx,rad2deg(phi2),'bx'); hold on;
+        plot(idx,m,'rx'); hold on;
     elseif mean(delta21 + delta32 + delta43) < 0
         phi3 = estTheta(delta43,c,d);
         phi4 = estTheta(delta32,c,d);
@@ -69,15 +70,17 @@ for idx = 1:5
 
         dx(idx) = - r(idx) * cos(theta(idx));
         dy(idx) = r(idx) * sin(theta(idx));
-        % plot(idx,r(idx),'rx'); hold on; ylim([-10 10]);
-        plot(idx,rad2deg(phi3),'gx'); hold on;
-        plot(idx,rad2deg(phi4),'kx'); hold on;
+        % plot(idx,r(idx),'bx'); hold on; ylim([-10 10]);
+        % plot(idx,rad2deg(phi3),'gx'); hold on;
+        % plot(idx,rad2deg(phi4),'kx'); hold on;
+        plot(idx,m,'bx'); hold on;
     end
     
     % figure(1);
     % plot(idx, r(idx), 'rx'); hold on; ylim([-10 10]);
     % plot(dx(idx), dy(idx), 'rx'); hold on; ylim([-10 10]); xlim([-10 10]);
     % plot(idx,rad2deg(theta(idx)),'rx'); hold on;
+    
     pause(0.001);
     % theta(idx)          
     start = start + step;
