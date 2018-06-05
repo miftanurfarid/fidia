@@ -29,60 +29,60 @@ for idx = 1:nframes
     [delta21,~] = tde(x(start:start+wl-1,2), x(start:start+wl-1,1), fs);
     [delta32,~] = tde(x(start:start+wl-1,3), x(start:start+wl-1,2), fs);
     [delta43,~] = tde(x(start:start+wl-1,4), x(start:start+wl-1,3), fs);
-            
+    
+    phi1 = estTheta(delta21,c,d);
+    phi2 = estTheta(delta32,c,d);
+    phi3 = estTheta(delta43,c,d);
+
+    theta(idx) = mean([phi1 phi2 phi3]);
+
     if mean(delta21 + delta32 + delta43) >= 0
-        phi1 = estTheta(delta21,c,d);
-        phi2 = estTheta(delta32,c,d);
-        m = d * (2*tan(phi1) - tan(phi2)) / (tan(phi2) - tan(phi1));
-        theta(idx) = - atan(tan(deg2rad(180) - phi2) / 0.5);
+        % m = d * (tan(phi1) - 2*tan(phi2)) / (tan(phi2) - tan(phi1));
 
         if rad2deg(theta(idx)) < -85 && rad2deg(theta(idx)) > -95
             theta(idx) = -(theta(idx));
         end
 
-        r(idx) = (m - 1.5 * d) / cos(theta(idx));
+        % r(idx) = (m - 1.5 * d) / cos(theta(idx));
 
-        if r(idx) == inf || r(idx) == -inf
-            r(idx) = r(idx-1);
-        end
+        % if r(idx) == inf || r(idx) == -inf
+        %     r(idx) = r(idx-1);
+        % end
         
-        dx(idx) = r(idx) * cos(theta(idx));
-        dy(idx) = r(idx) * sin(theta(idx));
+        % dx(idx) = r(idx) * cos(theta(idx));
+        % dy(idx) = r(idx) * sin(theta(idx));
         % plot(idx,r(idx),'rx'); hold on; ylim([-10 10]);
         % plot(idx,rad2deg(phi1),'rx'); hold on;
         % plot(idx,rad2deg(phi2),'bx'); hold on;
         % plot(idx,m,'rx'); hold on;
-        plot(idx,(1.5*d - m), 'rx'); hold on;
+        % plot(idx,(1.5*d - m), 'rx'); hold on;
     elseif mean(delta21 + delta32 + delta43) < 0
-        phi3 = estTheta(delta43,c,d);
-        phi4 = estTheta(delta32,c,d);
-        m = d * (2*tan(deg2rad(180) - phi4) - tan(deg2rad(180) - phi3)) / (tan(deg2rad(180) - phi3) - tan(deg2rad(180) - phi4));
-        theta(idx) = atan(tan(deg2rad(180) - phi3) / 0.5);
+        % m = d * (tan(deg2rad(180) - phi3) - 2*tan(deg2rad(180) - phi4)) / (tan(deg2rad(180) - phi4) - tan(deg2rad(180) - phi3));
 
         if rad2deg(theta(idx)) < -85 && rad2deg(theta(idx)) > -95
             theta(idx) = -(theta(idx));
         end
 
-        r(idx) = (m - 1.5 * d) / cos(theta(idx));
+        % r(idx) = (m - 1.5 * d) / cos(theta(idx));
 
-        if r(idx) == inf || r(idx) == -inf
-            r(idx) = r(idx-1);
-        end
+        % if r(idx) == inf || r(idx) == -inf
+        %     r(idx) = r(idx-1);
+        % end
 
-        dx(idx) = - r(idx) * cos(theta(idx));
-        dy(idx) = r(idx) * sin(theta(idx));
+        % dx(idx) = - r(idx) * cos(theta(idx));
+        % dy(idx) = r(idx) * sin(theta(idx));
         % plot(idx,r(idx),'bx'); hold on; ylim([-10 10]);
         % plot(idx,rad2deg(phi3),'gx'); hold on;
         % plot(idx,rad2deg(phi4),'kx'); hold on;
         % plot(idx,m,'bx'); hold on;
-        plot(idx,(1.5*d - m), 'bx'); hold on;
+        % plot(idx,(1.5*d - m), 'bx'); hold on;
     end
     
     % figure(1);
     % plot(idx, r(idx), 'rx'); hold on; ylim([-10 10]);
     % plot(dx(idx), dy(idx), 'rx'); hold on; ylim([-10 10]); xlim([-10 10]);
     % plot(idx,rad2deg(theta(idx)),'rx'); hold on;
-    
+    plot(idx, rad2deg(theta(idx)),'rx'); hold on;
     pause(0.001);
     % theta(idx)          
     start = start + step;

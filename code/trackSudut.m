@@ -1,25 +1,20 @@
 clearvars; close all; clc;
 
 % load data
-% (x4)-(x3)-(x2)-(x1)
 
-[x(:,1), ~]  = audioread('Track 1_030.wav'); % right
-[x(:,2), ~]  = audioread('Track 2_030.wav');
-[x(:,3), ~]  = audioread('Track 3_030.wav');
-[x(:,4), fs] = audioread('Track 4_030.wav'); % left
+for idx = 0:5:180
+    filename = sprintf('../data/tone/white_%03i.wav',idx);
+    [x, fs]  = audioread(filename);
+    wl = 0.02 * fs;
+    step = wl / 2;
+    nframes = floor((length(x) - wl + step) / step);
+    lenx = nframes * step - step + wl;
+    x = x(1:lenx,:);
+    d = 0.18;
+    c = 343;
 
-%
-wl = 0.02 * fs;
-step = wl / 2;
-nframes = floor((length(x) - wl + step) / step);
-lenx = nframes * step - step + wl;
-x = x(1:lenx,:);
-d = 0.3;
-c = 1554.1;
-
-start = 1;
-for m = 1:nframes
-    [delta12,~] = tde(x(start:start+wl-1,2), x(start:start+wl-1,1), fs);
-    plot(dx(idx),dy(idx),'rx'); hold on;
-    
+    [delta,~] = tde(x(:,1), x(:,2), fs);
+    phi = rad2deg(estTheta(delta,c,d));
+    plot(idx,phi,'rx',idx,idx,'k'); hold on;
 end
+plot(linspace(0,180,length(0:5:180)),linspace(0,180,length(0:5:180)));

@@ -1,9 +1,9 @@
 folder = '/home/abudzar/Carbon/Documents/tesis/data/mit_kemar_measurement/elev0/';
 
-f = 1000;
+% f = 1000;
 Fs = 16000;
-dt = 0:1/Fs:(1.5*Fs - 1)/Fs;
-x = 0.5*sin(2*pi*f*dt);
+% dt = 0:1/Fs:(1.5*Fs - 1)/Fs;
+x = rand(1,Fs*2);
 
 for idx = 90:-5:-90
     
@@ -25,5 +25,12 @@ for idx = 90:-5:-90
     X(:,1) = conv(x,hl);
     X(:,2) = conv(x,hr);
 
-    audiowrite(sprintf('../data/tone/tone%ihz_%03i.wav',f,idx),X,Fs);
+    if idx <= 90 && idx >= 0
+        sudut = abs(idx - 90);
+        audiowrite(sprintf('../data/tone/white_%03i.wav',sudut),X,Fs);
+    else
+        sudut = 90 - idx;
+        audiowrite(sprintf('../data/tone/white_%03i.wav',sudut),X,Fs);
+    end
+
 end
