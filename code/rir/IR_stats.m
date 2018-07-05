@@ -1,4 +1,4 @@
-function [rt,drr,cte,cfs,edt] = IR_stats(filename,varargin)
+function [rt,drr,cte,cfs,edt] = IR_stats(x,fs,varargin)
 % Calculate RT, DRR, Cte, and EDT for impulse response file
 % 
 %   RT = IR_STATS(FILENAME) returns the reverberation time (to -60 dB)
@@ -128,13 +128,13 @@ function [rt,drr,cte,cfs,edt] = IR_stats(filename,varargin)
     %% read in audio file
 
     % read in impulse
-    [x,fs] = audioread(filename);
+    % [x,fs] = audioread(filename);
 
-    if size(x,2) == 2
-        x = x(:,1);
-    elseif size(x,1) == 2
-        x = x(1,:);
-    end
+    % if size(x,2) == 2
+        % x = x(:,1);
+    % elseif size(x,1) == 2
+        % x = x(1,:);
+    % end
         
     assert(fs>=5000,'Sampling frequency is too low. FS must be at least 5000 Hz.')
 
