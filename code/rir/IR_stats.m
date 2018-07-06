@@ -1,4 +1,4 @@
-function [rt,drr,cte,cfs,edt] = IR_stats(x,fs,varargin)
+function [rt,drr,cte,cfs,edt] = IR_stats(filename,varargin)
 % Calculate RT, DRR, Cte, and EDT for impulse response file
 % 
 %   RT = IR_STATS(FILENAME) returns the reverberation time (to -60 dB)
@@ -98,7 +98,7 @@ function [rt,drr,cte,cfs,edt] = IR_stats(x,fs,varargin)
 
     % set defaults
     options = struct(...
-        'graph',false,...
+        'graph',true,...
         'te',0.05,...
         'spec','full',...
         'y_fit',[0 -60],...
@@ -125,16 +125,16 @@ function [rt,drr,cte,cfs,edt] = IR_stats(x,fs,varargin)
         end
     end
     
-    %% read in audio file
+    % read in audio file
 
     % read in impulse
-    % [x,fs] = audioread(filename);
+    [x,fs] = audioread(filename);
 
-    % if size(x,2) == 2
-        % x = x(:,1);
-    % elseif size(x,1) == 2
-        % x = x(1,:);
-    % end
+    if size(x,2) == 2
+        x = x(:,1);
+    elseif size(x,1) == 2
+        x = x(1,:);
+    end
         
     assert(fs>=5000,'Sampling frequency is too low. FS must be at least 5000 Hz.')
 
@@ -190,8 +190,8 @@ function [rt,drr,cte,cfs,edt] = IR_stats(x,fs,varargin)
             y = filter(b(f,:),a(f,:),x(:,n)); % octave-band filter
             temp = cumtrapz(y(end:-1:1).^2); % decay curve
             z(f,:,n) = temp(end:-1:1);
-            [rt_temp(f,n),E_rt,fit_rt] = calc_decay(z(f,t0:end,n),options.y_fit,60,fs); % estimate RT
-            [edt(f,n),E_edt,fit_edt] = calc_decay(z(f,t0:end,n),[0,-10],60,fs); % estimate EDT
+            [rt_temp(f,n),E_rt,fit_rt] = calc_decay(z(f,t0:end,n),options.y_fit,30,fs); % estimate RT
+            [edt(f,n),E_edt,fit_edt] = calc_decay(z(f,t0:end,n),[0,-10],30,fs); % estimate EDT
             if options.graph % plot
                 % time axes for different vectors
                 ty = ((0:length(y)-1)-t0(n))./fs;
@@ -275,35 +275,5 @@ function [rt,drr,cte,cfs,edt] = IR_stats(x,fs,varargin)
         otherwise
             error('Unknown ''spec'': must be ''full'' or ''mean''.')
     end
-
-end
-
-function [t,E,fit] = calc_decay(z,y_fit,y_dec,fs)
-% CALC_DECAY calculate decay time from decay curve
-% Returns the time for a specified decay y_dec calculated
-% from the fit over the range y_fit. The input is the
-% integral of the impulse sample at fs Hz. The function also
-% returns the energy decay curve in dB and the corresponding
-% fit.
-
-    E = 10.*log10(z); % put into dB
-    E = E-max(E); % normalise to max 0
-    E = E(1:find(isinf(E),1,'first')-1); % remove trailing infinite values
-    IX = find(E<=max(y_fit),1,'first'):find(E<=min(y_fit),1,'first'); % find yfit x-range
-    if isempty(IX)
-        error('Impulse response has insufficient dynamic range to evaluate to %i dB',min(y_fit))
-    end
-
-    % calculate fit over yfit
-    x = reshape(IX,1,length(IX));
-    y = reshape(E(IX),1,length(IX));
-    p = polyfit(x,y,1);
-    fit = polyval(p,1:2*length(E)); % actual fit
-    fit2 = fit-max(fit); % fit anchored to 0dB
-
-    diff_y = abs(diff(y_fit)); % dB range diff
-    t = (y_dec/diff_y)*find(fit2<=-diff_y,1,'first')/fs; % estimate decay time
-
-    fit = fit(1:length(E));
 
 end
